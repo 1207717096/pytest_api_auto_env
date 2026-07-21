@@ -69,3 +69,7 @@ config = {
 
 # 当前选中环境的配置
 current = config[ENV]
+
+log.info(f"【环境校验】读取到的 TEST_ENV 变量值：{ENV}")
+
+log.info(f"【环境校验】当前环境BASE_URL：{current['BASE_URL']}")
