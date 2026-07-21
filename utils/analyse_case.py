@@ -8,13 +8,13 @@
 import logging
 
 import allure
-from config.config import *
+from config.config import current
 
 @allure.step('1、解析请求数据')
 def analyse_case(case):
 
     method = case['method']
-    url = BASE_URL + case['path']
+    url = current['BASE_URL'] + case['path']
     headers = eval(case['headers']) if isinstance(case['headers'], str) else None
     params = eval(case['params']) if isinstance(case['params'], str) else None
     data = eval(case["data"]) if isinstance(case["data"], str) else None

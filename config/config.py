@@ -13,8 +13,8 @@ print(f"【config.py】文件路径: {os.path.abspath(__file__)}")
 print(f"【config.py】Python 解释器: {sys.executable}")
 print(f"【config.py】TEST_ENV 原始值: {os.getenv('TEST_ENV', '未设置')}")
 
-# 默认环境
-ENV = os.getenv("TEST_ENV", "test")
+# 默认环境（与 Jenkins shell 脚本兜底值保持一致）
+ENV = os.getenv("TEST_ENV", "dev")
 
 # 多环境配置
 config = {
@@ -72,9 +72,14 @@ config = {
     }
 }
 
+if ENV not in config:
+    raise ValueError(f"未知环境 TEST_ENV={ENV!r}，可选值: {list(config.keys())}")
+
 # 当前选中环境的配置
 current = config[ENV]
 
-print(f"【环境校验】读取到的 TEST_ENV 变量值：{ENV}")
+# 展开为模块级变量，兼容 `from config.config import *`（BASE_URL / EXCEL_FILE 等）
+globals().update(current)
 
-print(f"【环境校验】当前环境BASE_URL：{current['BASE_URL']}")
+print(f"【环境校验】读取到的 TEST_ENV 变量值：{ENV}")
+print(f"【环境校验】当前环境BASE_URL：{BASE_URL}")

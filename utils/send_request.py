@@ -9,8 +9,7 @@ import pymysql
 import requests
 import allure
 import logging
-
-from config.config import *
+from config.config import current
 
 @allure.step('2、发送HTTP请求')
 def send_http_request(**request_data):
@@ -20,12 +19,12 @@ def send_http_request(**request_data):
 
 def send_jdbc_request(sql,index=0,):
     sq = pymysql.Connect(
-        host = DB_HOST,
-        user = DB_USER,
-        password = DB_PASSWORD,
-        database = DB_NAME,
+        host = current['DB_HOST'],
+        user = current['DB_USER'],  
+        password = current['DB_PASSWORD'],
+        database = current['DB_NAME'],
         charset = 'utf8',
-        port = DB_PORT
+        port = current['DB_PORT']
     )
     # 创建游标
     cur = sq.cursor()

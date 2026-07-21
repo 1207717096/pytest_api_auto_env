@@ -1,3 +1,4 @@
+import argparse
 import pytest
 import os
 import shutil
@@ -5,6 +6,18 @@ from datetime import datetime
 
 if __name__ == '__main__':
     PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    # 解析 --env，并写入环境变量（须在 pytest 加载 config 之前完成）
+    parser = argparse.ArgumentParser(description="接口自动化测试入口")
+    parser.add_argument(
+        "--env",
+        default=os.getenv("TEST_ENV", "dev"),
+        choices=["dev", "test", "pre", "prod"],
+        help="指定测试环境，对应 config.py 中的 key",
+    )
+    args = parser.parse_args()
+    os.environ["TEST_ENV"] = args.env
+    print(f"【run.py】本次执行环境: {args.env}")
 
     # 固定路径（Jenkins Allure 插件读取）
     allure_dir = os.path.join(PROJECT_DIR, "allure-results")
