@@ -7,6 +7,11 @@
 """
 
 import os
+import sys
+
+print(f"【config.py】文件路径: {os.path.abspath(__file__)}")
+print(f"【config.py】Python 解释器: {sys.executable}")
+print(f"【config.py】TEST_ENV 原始值: {os.getenv('TEST_ENV', '未设置')}")
 
 # 默认环境
 ENV = os.getenv("TEST_ENV", "test")
