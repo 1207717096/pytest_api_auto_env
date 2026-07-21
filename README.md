@@ -27,7 +27,11 @@
 ```text
 python-test-api/
 ├── config/
-│   └── config.py              # 环境地址、Excel 路径、数据库配置
+│   ├── config.py              # 多环境配置加载器（按 --env / TEST_ENV 选择）
+│   └── environments/
+│       ├── dev.py             # 开发环境配置
+│       ├── test.py            # 测试环境配置
+│       └── prod.py            # 生产环境配置
 ├── data/
 │   └── 测试用例.xlsx           # 接口测试用例
 ├── files/                     # 上传文件等测试资源
@@ -44,7 +48,7 @@ python-test-api/
 ├── allure-results/            # Allure 原始结果与 HTML 报告
 ├── log/                       # 运行日志
 ├── conftest.py                # pytest 钩子与日志配置
-├── run.py                     # 一键执行并生成报告
+├── run.py                     # 一键执行并生成报告（支持 --env 选择环境）
 ├── pytest.ini
 └── install_package.sh         # 依赖安装脚本
 ```
@@ -84,19 +88,59 @@ allure --version
 
 ### 3. 被测服务与数据库
 
-在 `config/config.py` 中按实际环境修改：
+项目支持 **多环境** 管理，环境配置放在 `config/environments/` 目录下，每个环境一个独立文件：
 
-```python
-BASE_URL = 'http://127.0.0.1:8888/api/private/v1'
+```text
+config/environments/
+├── dev.py      # 开发环境
+├── test.py     # 测试环境
+└── prod.py     # 生产环境
+```
 
-EXCEL_FILE = './data/测试用例.xlsx'
-SHEET_NAME = 'Sheet1'
+每个环境文件中维护独立的 `BASE_URL / DB_HOST / DB_USER ...` 等参数。
+新增环境只需 3 步：
 
-DB_HOST = '127.0.0.1'
-DB_USER = 'root'
-DB_PASSWORD = '123456'
-DB_NAME = 'mydb'
-DB_PORT = 3306
+1. 在 `config/environments/` 下新建一个 `.py` 文件，例如 `staging.py`，按 dev.py 同名变量填入对应环境的值
+2. 在 `config/config.py` 的 `ENV_REGISTRY` 中追加 `'staging': 'staging'`
+3. 后续执行时通过 `--env=staging` 或 `TEST_ENV=staging` 即可
+
+## 多环境使用
+
+环境选择优先级（从高到低）：
+
+1. **命令行参数** `--env=xxx`
+2. **环境变量** `TEST_ENV`
+3. `config/config.py` 中的 `DEFAULT_ENV`（默认 `dev`）
+
+本地执行：
+
+```bash
+# 方式一：直接用 pytest（推荐调试时）
+pytest -vs ./testcase/test_runner_40.py --env=test
+pytest -vs ./testcase/test_runner_40.py --env=prod
+
+# 方式二：用 run.py（带 allure 备份逻辑）
+python3 run.py --env=test
+python3 run.py --env=prod
+
+# 方式三：通过环境变量（无需改命令）
+TEST_ENV=test python3 run.py
+```
+
+Jenkins 中使用：
+
+1. 任务配置 → 「**参数化构建过程**」→ 添加 `Choice Parameter`
+   - 名称：`TEST_ENV`
+   - 选项：`dev\ntest\nprod`
+   - 描述：`选择测试环境`
+2. 构建步骤选择「Execute shell」，脚本保持 `jenkins.sh` 即可
+3. `jenkins.sh` 会自动读取 `$TEST_ENV` 并透传给 `run.py`
+
+构建日志中会打印：
+
+```
+>>> 本次执行环境: test
+✅ 已加载环境配置：[test] 测试环境 | BASE_URL=http://test-api.example.com/api/private/v1
 ```
 
 请确认：

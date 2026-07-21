@@ -19,6 +19,16 @@ if [ -z "$PY314" ]; then
 fi
 echo ">>> 使用解释器: $PY314 ($($PY314 --version))"
 
+# ============================================================
+# ★ 新增：环境选择
+#   - 在 Jenkins 任务里把「参数化构建过程」勾上，添加一个
+#     Choice 参数，名字叫 TEST_ENV，可选项: dev / test / prod
+#   - 这里会自动读取并 export，给 run.py / pytest / config 用
+# ============================================================
+TEST_ENV="${TEST_ENV:-dev}"
+export TEST_ENV
+echo ">>> 本次执行环境: ${TEST_ENV}"
+
 echo "========== 1. 创建/激活虚拟环境 =========="
 # ★ 改动1：每次重建 venv，避免旧 3.9 venv 被复用
 rm -rf venv
@@ -45,7 +55,8 @@ echo "=== ls /usr/local/allure-2.44.0/bin/ ==="
 ls -la /usr/local/allure-2.44.0/bin/
 
 echo "========== 5. 运行测试 =========="
-python3 run.py
+# ★ 改动3：把环境透传给 run.py
+python3 run.py --env "${TEST_ENV}"
 
 # 验证结果
 echo "=== allure-results 内容 ==="
