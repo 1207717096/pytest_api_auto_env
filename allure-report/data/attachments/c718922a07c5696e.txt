@@ -1,0 +1,3 @@
+[32mINFO    [0m root:test_runner_40.py:26 0.用例ID：1 模块：登录 标题：管理员登录成功
+[32mINFO    [0m root:analyse_case.py:33 1.解析请求数据，请求数据为：{'method': 'post', 'url': 'http://127.0.0.1:8888/api/private/v1/test/login', 'headers': None, 'params': None, 'data': {'username': 'admin', 'paswword': 'admin'}, 'json': None, 'files': None}
+[32mINFO    [0m root:send_request.py:16 2.发送http请求，响应“
