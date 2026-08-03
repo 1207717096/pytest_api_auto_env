@@ -104,6 +104,85 @@ DB_PORT = 3306
 - 接口服务已启动（默认 `127.0.0.1:8888`）
 - 如用例含数据库断言 / SQL 提取，MySQL 可连通且库表数据正确
 
+## 运行参数
+
+本框架支持通过 **命令行参数**、**环境变量**、**Jenkins 流水线参数** 三种方式控制运行行为，方便本地调试与 CI 集成。
+
+### 1. `run.py` 命令行参数
+
+`run.py` 已封装为 CLI，支持如下参数：
+
+| 参数 | 说明 | 示例 |
+|------|------|------|
+| `--env` | 指定运行环境，会覆盖 `config/environments.py` 中的默认 `ENV`，用于切换 `BASE_URL` | `--env prod` |
+| `--excel-file` | 指定用例 Excel 文件名（仅传文件名，自动到 `data/` 下查找） | `--excel-file 用例集合.xlsx` |
+| `--sheet-name` | 指定 Excel 中的 Sheet 名 | `--sheet-name Sheet1` |
+| `--case` | 指定要执行的 pytest 测试脚本路径（默认最新版本 `testcase/test_runner_40.py`） | `--case ./testcase/test_runner_38.py` |
+
+示例：
+
+```bash
+python3 run.py --env prod --excel-file 用例集合.xlsx --sheet-name 登录模块
+```
+
+> `--case` 一般用默认值即可，只有在需要对比跑历史脚本或新写脚本调试时再覆盖。
+
+### 2. 环境变量
+
+以下环境变量会被 `run.py` 读取，等价于命令行参数，**命令行参数优先级高于环境变量**：
+
+| 变量名 | 含义 | 示例 |
+|--------|------|------|
+| `TEST_ENV` | 运行环境 | `export TEST_ENV=prod` |
+| `TEST_EXCEL_FILE` | 用例 Excel 文件名 | `export TEST_EXCEL_FILE=用例集合.xlsx` |
+| `TEST_SHEET_NAME` | Sheet 名 | `export TEST_SHEET_NAME=Sheet1` |
+
+> 优先级：`命令行参数` > `环境变量` > `配置文件中的默认值`
+
+Jenkinsfile 中已将这些变量声明为可配置参数，可直接在 Job 配置页修改。
+
+### 3. 飞书推送参数（`utils/send_allure_to_feishu.py`）
+
+单独运行飞书推送脚本时支持的参数：
+
+| 参数 | 说明 | 示例 |
+|------|------|------|
+| `--webhook` | 飞书机器人 webhook 地址 | `--webhook https://open.feishu.cn/...` |
+| `--secret` | 飞书机器人加签密钥（开启签名校验时必填） | `--secret SECxxxxxx` |
+| `--report-path` | Allure HTML 报告根目录 | `--report-path ./allure-results/tmp/html_report` |
+| `--report-url` | 报告对外访问 URL，会以卡片链接形式发送给群 | `--report-url http://ci.xxx.com/job/test/123/allure` |
+| `--at-all` | 是否 @所有人（加 `--at-all` 即开启） | `--at-all` |
+
+示例：
+
+```bash
+python3 utils/send_allure_to_feishu.py \
+  --webhook https://open.feishu.cn/open-apis/bot/v2/hook/xxxx \
+  --secret SECxxxxxxxx \
+  --report-path ./allure-results/tmp/html_report \
+  --report-url http://ci.xxx.com/job/api-test/lastBuild/allure \
+  --at-all
+```
+
+### 4. Jenkins 任务参数
+
+项目自带 `jenkins.sh` 执行脚本，在 Jenkins Freestyle Job 中需手动在任务配置页添加以下参数（位于 `General > This project is parameterized`）：
+
+| 参数名 | 类型 | 说明 |
+|--------|------|------|
+| `TEST_ENV` | Choice | 运行环境枚举（如 `dev / test / prod`），自动绑定到环境变量 |
+| `TEST_EXCEL_FILE` | Choice | 用例 Excel 文件名枚举 |
+| `TEST_SHEET_NAME` | Choice | Sheet 名枚举 |
+| `FEISHU_WEBHOOK` | Secret text | 飞书机器人 webhook（在 Build Environment 中绑定为变量），**注意不要提交到代码仓库** |
+
+构建时会自动：
+
+1. Jenkins 把上述参数 export 为同名的环境变量
+2. `jenkins.sh` 调用 `python3 run.py --env $TEST_ENV --excel-file $TEST_EXCEL_FILE --sheet-name $TEST_SHEET_NAME` 触发执行
+3. 执行完调用 `python3 utils/send_allure_to_feishu.py` 把报告链接 @ 到飞书群
+
+---
+
 ## Excel 用例说明
 
 文件路径：`data/测试用例.xlsx`  
