@@ -1,0 +1,1 @@
+[32mINFO    [0m root:test_runner_40.py:26 0.用例ID：6 模块：图片上传 标题：图片上传成功

@@ -1,0 +1,19 @@
+conftest.py      68 pytest_sessionstart 2026-08-03 17:57:12 [INFO] ============================================================
+conftest.py      70 pytest_sessionstart 2026-08-03 17:57:12 [INFO] 【测试执行开始】
+conftest.py      72 pytest_sessionstart 2026-08-03 17:57:12 [INFO] 开始时间: 2026-08-03 17:57:12
+conftest.py      75 pytest_sessionstart 2026-08-03 17:57:12 [INFO] ============================================================
+conftest.py      88 pytest_collection_modifyitems 2026-08-03 17:57:12 [INFO] 共收集到 0 个测试用例
+conftest.py      158 pytest_sessionfinish 2026-08-03 17:57:12 [INFO] ============================================================
+conftest.py      161 pytest_sessionfinish 2026-08-03 17:57:12 [INFO] 【测试执行结束】
+conftest.py      164 pytest_sessionfinish 2026-08-03 17:57:12 [INFO] 结束时间: 2026-08-03 17:57:12
+conftest.py      167 pytest_sessionfinish 2026-08-03 17:57:12 [INFO] 总耗时: 0.198s
+conftest.py      170 pytest_sessionfinish 2026-08-03 17:57:12 [INFO] ------------------------------------------------------------
+conftest.py      173 pytest_sessionfinish 2026-08-03 17:57:12 [INFO] 【执行统计】
+conftest.py      176 pytest_sessionfinish 2026-08-03 17:57:12 [INFO]   用例总数: 0
+conftest.py      177 pytest_sessionfinish 2026-08-03 17:57:12 [INFO]   通过: 0
+conftest.py      178 pytest_sessionfinish 2026-08-03 17:57:12 [INFO]   失败: 0
+conftest.py      179 pytest_sessionfinish 2026-08-03 17:57:12 [INFO]   跳过: 0
+conftest.py      180 pytest_sessionfinish 2026-08-03 17:57:12 [INFO]   错误: 0
+conftest.py      181 pytest_sessionfinish 2026-08-03 17:57:12 [INFO]   通过率: N/A
+conftest.py      183 pytest_sessionfinish 2026-08-03 17:57:12 [INFO] ------------------------------------------------------------
+conftest.py      201 pytest_sessionfinish 2026-08-03 17:57:12 [INFO] ============================================================

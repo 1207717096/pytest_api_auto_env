@@ -81,5 +81,21 @@ current = config[ENV]
 # 展开为模块级变量，兼容 `from config.config import *`（BASE_URL / EXCEL_FILE 等）
 globals().update(current)
 
+# ============================================================
+# ★ 运行时覆盖：允许通过环境变量 / Jenkins Choice 参数切换 Excel 文件
+#   优先级：CLI 参数（run.py 已写入 env） > 环境变量 > 环境配置中的默认值
+#   同时更新 current 字典 与 模块顶层变量，让两种引用风格都生效
+# ============================================================
+_overrides = {
+    'EXCEL_FILE': os.environ.get('TEST_EXCEL_FILE', '').strip(),
+    'SHEET_NAME': os.environ.get('TEST_SHEET_NAME', '').strip(),
+}
+for _key, _val in _overrides.items():
+    if _val:
+        current[_key] = _val          # 影响 `from config.config import current` 的代码
+        globals()[_key] = _val         # 影响 `from config.config import *` 的代码
+        print(f'【Excel 覆盖】{_key} = {_val}  (来源：环境变量)')
+
 print(f"【环境校验】读取到的 TEST_ENV 变量值：{ENV}")
 print(f"【环境校验】当前环境BASE_URL：{BASE_URL}")
+print(f"【环境校验】当前 Excel 文件：{EXCEL_FILE} (sheet={SHEET_NAME})")
