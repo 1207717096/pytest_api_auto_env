@@ -1,0 +1,371 @@
+conftest.py      68 pytest_sessionstart 2026-07-21 18:59:43 [INFO] ============================================================
+conftest.py      70 pytest_sessionstart 2026-07-21 18:59:43 [INFO] 【测试执行开始】
+conftest.py      72 pytest_sessionstart 2026-07-21 18:59:43 [INFO] 开始时间: 2026-07-21 18:59:43
+conftest.py      75 pytest_sessionstart 2026-07-21 18:59:43 [INFO] ============================================================
+conftest.py      88 pytest_collection_modifyitems 2026-07-21 18:59:43 [INFO] 共收集到 6 个测试用例
+conftest.py      93 pytest_collection_modifyitems 2026-07-21 18:59:43 [INFO]   - testcase/test_runner_40.py::TestRunner::test_case[case0]
+conftest.py      93 pytest_collection_modifyitems 2026-07-21 18:59:43 [INFO]   - testcase/test_runner_40.py::TestRunner::test_case[case1]
+conftest.py      93 pytest_collection_modifyitems 2026-07-21 18:59:43 [INFO]   - testcase/test_runner_40.py::TestRunner::test_case[case2]
+conftest.py      93 pytest_collection_modifyitems 2026-07-21 18:59:43 [INFO]   - testcase/test_runner_40.py::TestRunner::test_case[case3]
+conftest.py      93 pytest_collection_modifyitems 2026-07-21 18:59:43 [INFO]   - testcase/test_runner_40.py::TestRunner::test_case[case4]
+conftest.py      93 pytest_collection_modifyitems 2026-07-21 18:59:43 [INFO]   - testcase/test_runner_40.py::TestRunner::test_case[case5]
+test_runner_40.py 26 test_case 2026-07-21 18:59:43 [INFO] 0.用例ID：1 模块：登录 标题：管理员登录成功
+analyse_case.py  33 analyse_case 2026-07-21 18:59:43 [INFO] 1.解析请求数据，请求数据为：{'method': 'post', 'url': 'http://127.0.0.1:8888/api/private/v1/test/login', 'headers': None, 'params': None, 'data': {'username': 'admin', 'paswword': 'admin'}, 'json': None, 'files': None}
+send_request.py  16 send_http_request 2026-07-21 18:59:47 [INFO] 2.发送http请求，响应“
+conftest.py      138 pytest_runtest_makereport 2026-07-21 18:59:50 [INFO] 【用例结果】testcase/test_runner_40.py::TestRunner::test_case[case0] | FAILED | 耗时: 6.563s
+conftest.py      142 pytest_runtest_makereport 2026-07-21 18:59:50 [ERROR] 【错误详情】testcase/test_runner_40.py::TestRunner::test_case[case0]:
+self = <Response [502]>, kwargs = {}
+
+    def json(self, **kwargs: Any) -> Any:
+        r"""Decodes the JSON response body (if any) as a Python object.
+    
+        This may return a dictionary, list, etc. depending on what is in the response.
+    
+        :param \*\*kwargs: Optional arguments that ``json.loads`` takes.
+        :raises requests.exceptions.JSONDecodeError: If the response body does not
+            contain valid json.
+        """
+    
+        if not self.encoding and self.content and len(self.content) > 3:
+            # No encoding set. JSON RFC 4627 section 3 states we should expect
+            # UTF-8, -16 or -32. Detect which one to use; If the detection or
+            # decoding fails, fall back to `self.text` (using charset_normalizer to make
+            # a best guess).
+            encoding = guess_json_utf(self.content)
+            if encoding is not None:
+                try:
+                    return complexjson.loads(self.content.decode(encoding), **kwargs)
+                except UnicodeDecodeError:
+                    # Wrong UTF codec detected; usually because it's not UTF-8
+                    # but some other 8-bit codec.  This is an RFC violation,
+                    # and the server didn't bother to tell us what codec *was*
+                    # used.
+                    pass
+                except JSONDecodeError as e:
+                    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+    
+        try:
+>           return complexjson.loads(self.text, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/site-packages/requests/models.py:1116: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/__init__.py:352: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/decoder.py:345: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <json.decoder.JSONDecoder object at 0x10825b8c0>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/decoder.py:363: JSONDecodeError
+
+During handling of the above exception, another exception occurred:
+
+self = <testcase.test_runner_40.TestRunner object at 0x10b1b2990>
+case = {'id': 1, 'feature': '登录', 'story': '登录成功', 'title': '管理员登录成功', ...}
+
+    @pytest.mark.parametrize("case",data)
+    def test_case(self,case):
+        #引用全局变量（建立测试函数内外all，可以使用{}空字典）
+        all = self.all
+        case = eval(Template(str(case)).render(all))
+    
+        allure_report_init(case)
+    
+        #0.测试用例的描述信息日志
+        logging.info(f'0.用例ID：{case["id"]} 模块：{case["feature"]} 标题：{case["title"]}')
+        # 核心步骤1：解析请求参数
+        request_data = analyse_case(case)
+    
+        # 核心步骤2：发起请求，得到响应结果
+        res = send_http_request(**request_data)
+        # res = requests.request(**request_data)
+    
+        # 核心步骤3：处理断言
+        #HTTP响应断言
+>       http_assert(case,res)
+
+../python-test-api/testcase/test_runner_40.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+utils/asserts.py:17: in http_assert
+    result = jsonpath.jsonpath(res.json(), case['check'])[index]
+                               ^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Response [502]>, kwargs = {}
+
+    def json(self, **kwargs: Any) -> Any:
+        r"""Decodes the JSON response body (if any) as a Python object.
+    
+        This may return a dictionary, list, etc. depending on what is in the response.
+    
+        :param \*\*kwargs: Optional arguments that ``json.loads`` takes.
+        :raises requests.exceptions.JSONDecodeError: If the response body does not
+            contain valid json.
+        """
+    
+        if not self.encoding and self.content and len(self.content) > 3:
+            # No encoding set. JSON RFC 4627 section 3 states we should expect
+            # UTF-8, -16 or -32. Detect which one to use; If the detection or
+            # decoding fails, fall back to `self.text` (using charset_normalizer to make
+            # a best guess).
+            encoding = guess_json_utf(self.content)
+            if encoding is not None:
+                try:
+                    return complexjson.loads(self.content.decode(encoding), **kwargs)
+                except UnicodeDecodeError:
+                    # Wrong UTF codec detected; usually because it's not UTF-8
+                    # but some other 8-bit codec.  This is an RFC violation,
+                    # and the server didn't bother to tell us what codec *was*
+                    # used.
+                    pass
+                except JSONDecodeError as e:
+                    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+    
+        try:
+            return complexjson.loads(self.text, **kwargs)
+        except JSONDecodeError as e:
+            # Catch JSON-related errors and raise as requests.JSONDecodeError
+            # This aliases json.JSONDecodeError and simplejson.JSONDecodeError
+>           raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+E           requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/site-packages/requests/models.py:1120: JSONDecodeError
+test_runner_40.py 26 test_case 2026-07-21 18:59:50 [INFO] 0.用例ID：2 模块：用户管理 标题：未登录状态查询用户列表失败
+analyse_case.py  33 analyse_case 2026-07-21 18:59:50 [INFO] 1.解析请求数据，请求数据为：{'method': 'get', 'url': 'http://127.0.0.1:8888/api/private/v1/test/users', 'headers': None, 'params': {'pagenum': 1, 'pagesize': 1}, 'data': None, 'json': None, 'files': None}
+send_request.py  16 send_http_request 2026-07-21 18:59:52 [INFO] 2.发送http请求，响应“
+asserts.py       22 http_assert 2026-07-21 18:59:55 [INFO] 3.http响应断言的内容是：预期结果（ 无效token ）in 实际结果（ ）
+conftest.py      138 pytest_runtest_makereport 2026-07-21 18:59:55 [INFO] 【用例结果】testcase/test_runner_40.py::TestRunner::test_case[case1] | FAILED | 耗时: 5.856s
+conftest.py      142 pytest_runtest_makereport 2026-07-21 18:59:55 [ERROR] 【错误详情】testcase/test_runner_40.py::TestRunner::test_case[case1]:
+self = <testcase.test_runner_40.TestRunner object at 0x10b1b2e90>
+case = {'id': 2, 'feature': '用户管理', 'story': '查询失败', 'title': '未登录状态查询用户列表失败', ...}
+
+    @pytest.mark.parametrize("case",data)
+    def test_case(self,case):
+        #引用全局变量（建立测试函数内外all，可以使用{}空字典）
+        all = self.all
+        case = eval(Template(str(case)).render(all))
+    
+        allure_report_init(case)
+    
+        #0.测试用例的描述信息日志
+        logging.info(f'0.用例ID：{case["id"]} 模块：{case["feature"]} 标题：{case["title"]}')
+        # 核心步骤1：解析请求参数
+        request_data = analyse_case(case)
+    
+        # 核心步骤2：发起请求，得到响应结果
+        res = send_http_request(**request_data)
+        # res = requests.request(**request_data)
+    
+        # 核心步骤3：处理断言
+        #HTTP响应断言
+>       http_assert(case,res)
+
+../python-test-api/testcase/test_runner_40.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+case = {'id': 2, 'feature': '用户管理', 'story': '查询失败', 'title': '未登录状态查询用户列表失败', ...}
+res = <Response [502]>, index = 0
+
+    @allure.step('3、HTTP响应断言')
+    def http_assert(case,res,index=0):
+    
+        if case['check']:
+            result = jsonpath.jsonpath(res.json(), case['check'])[index]
+            logging.info(f'3.http响应断言的内容是：实际结果（ {result} ）== 预期结果（ {case["expected"]}）')
+            assert result == case["expected"]
+    
+        else:
+            logging.info(f'3.http响应断言的内容是：预期结果（ {case["expected"]} ）in 实际结果（ {res.text}）')
+>           assert case["expected"] in res.text
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError
+
+utils/asserts.py:23: AssertionError
+test_runner_40.py 26 test_case 2026-07-21 18:59:55 [INFO] 0.用例ID：3 模块：用户管理 标题：登录状态查询
+conftest.py      138 pytest_runtest_makereport 2026-07-21 18:59:56 [INFO] 【用例结果】testcase/test_runner_40.py::TestRunner::test_case[case2] | FAILED | 耗时: 0.008s
+conftest.py      142 pytest_runtest_makereport 2026-07-21 18:59:56 [ERROR] 【错误详情】testcase/test_runner_40.py::TestRunner::test_case[case2]:
+self = <testcase.test_runner_40.TestRunner object at 0x10b25ad70>
+case = {'id': 3, 'feature': '用户管理', 'story': '查询成功', 'title': '登录状态查询', ...}
+
+    @pytest.mark.parametrize("case",data)
+    def test_case(self,case):
+        #引用全局变量（建立测试函数内外all，可以使用{}空字典）
+        all = self.all
+        case = eval(Template(str(case)).render(all))
+    
+        allure_report_init(case)
+    
+        #0.测试用例的描述信息日志
+        logging.info(f'0.用例ID：{case["id"]} 模块：{case["feature"]} 标题：{case["title"]}')
+        # 核心步骤1：解析请求参数
+>       request_data = analyse_case(case)
+                       ^^^^^^^^^^^^^^^^^^
+
+../python-test-api/testcase/test_runner_40.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+case = {'id': 3, 'feature': '用户管理', 'story': '查询成功', 'title': '登录状态查询', ...}
+
+    @allure.step('1、解析请求数据')
+    def analyse_case(case):
+    
+        method = case['method']
+>       url = current['BASE_URL'] + case['path']
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: can only concatenate str (not "NoneType") to str
+
+utils/analyse_case.py:17: TypeError
+test_runner_40.py 26 test_case 2026-07-21 18:59:56 [INFO] 0.用例ID：4 模块：用户管理 标题：添加一个用户，添加成功
+conftest.py      138 pytest_runtest_makereport 2026-07-21 18:59:56 [INFO] 【用例结果】testcase/test_runner_40.py::TestRunner::test_case[case3] | FAILED | 耗时: 0.002s
+conftest.py      142 pytest_runtest_makereport 2026-07-21 18:59:56 [ERROR] 【错误详情】testcase/test_runner_40.py::TestRunner::test_case[case3]:
+self = <testcase.test_runner_40.TestRunner object at 0x10b25afd0>
+case = {'id': 4, 'feature': '用户管理', 'story': '新增成功', 'title': '添加一个用户，添加成功', ...}
+
+    @pytest.mark.parametrize("case",data)
+    def test_case(self,case):
+        #引用全局变量（建立测试函数内外all，可以使用{}空字典）
+        all = self.all
+        case = eval(Template(str(case)).render(all))
+    
+        allure_report_init(case)
+    
+        #0.测试用例的描述信息日志
+        logging.info(f'0.用例ID：{case["id"]} 模块：{case["feature"]} 标题：{case["title"]}')
+        # 核心步骤1：解析请求参数
+>       request_data = analyse_case(case)
+                       ^^^^^^^^^^^^^^^^^^
+
+../python-test-api/testcase/test_runner_40.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+case = {'id': 4, 'feature': '用户管理', 'story': '新增成功', 'title': '添加一个用户，添加成功', ...}
+
+    @allure.step('1、解析请求数据')
+    def analyse_case(case):
+    
+        method = case['method']
+        url = current['BASE_URL'] + case['path']
+>       headers = eval(case['headers']) if isinstance(case['headers'], str) else None
+                  ^^^^^^^^^^^^^^^^^^^^^
+E         File "<string>", line 1
+E           {"Authorization"：""}
+E                           ^
+E       SyntaxError: invalid character '：' (U+FF1A)
+
+utils/analyse_case.py:18: SyntaxError
+test_runner_40.py 26 test_case 2026-07-21 18:59:56 [INFO] 0.用例ID：5 模块：用户管理 标题：修改用户状态，修改成功
+conftest.py      138 pytest_runtest_makereport 2026-07-21 18:59:56 [INFO] 【用例结果】testcase/test_runner_40.py::TestRunner::test_case[case4] | FAILED | 耗时: 0.001s
+conftest.py      142 pytest_runtest_makereport 2026-07-21 18:59:56 [ERROR] 【错误详情】testcase/test_runner_40.py::TestRunner::test_case[case4]:
+self = <testcase.test_runner_40.TestRunner object at 0x10adc1eb0>
+case = {'id': 5, 'feature': '用户管理', 'story': '修改成功', 'title': '修改用户状态，修改成功', ...}
+
+    @pytest.mark.parametrize("case",data)
+    def test_case(self,case):
+        #引用全局变量（建立测试函数内外all，可以使用{}空字典）
+        all = self.all
+        case = eval(Template(str(case)).render(all))
+    
+        allure_report_init(case)
+    
+        #0.测试用例的描述信息日志
+        logging.info(f'0.用例ID：{case["id"]} 模块：{case["feature"]} 标题：{case["title"]}')
+        # 核心步骤1：解析请求参数
+>       request_data = analyse_case(case)
+                       ^^^^^^^^^^^^^^^^^^
+
+../python-test-api/testcase/test_runner_40.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+case = {'id': 5, 'feature': '用户管理', 'story': '修改成功', 'title': '修改用户状态，修改成功', ...}
+
+    @allure.step('1、解析请求数据')
+    def analyse_case(case):
+    
+        method = case['method']
+        url = current['BASE_URL'] + case['path']
+>       headers = eval(case['headers']) if isinstance(case['headers'], str) else None
+                  ^^^^^^^^^^^^^^^^^^^^^
+E         File "<string>", line 1
+E           {"Authorization"：""}
+E                           ^
+E       SyntaxError: invalid character '：' (U+FF1A)
+
+utils/analyse_case.py:18: SyntaxError
+test_runner_40.py 26 test_case 2026-07-21 18:59:56 [INFO] 0.用例ID：6 模块：图片上传 标题：图片上传成功
+conftest.py      138 pytest_runtest_makereport 2026-07-21 18:59:56 [INFO] 【用例结果】testcase/test_runner_40.py::TestRunner::test_case[case5] | FAILED | 耗时: 0.001s
+conftest.py      142 pytest_runtest_makereport 2026-07-21 18:59:56 [ERROR] 【错误详情】testcase/test_runner_40.py::TestRunner::test_case[case5]:
+self = <testcase.test_runner_40.TestRunner object at 0x10b1c27a0>
+case = {'id': 6, 'feature': '图片上传', 'story': '上传成功', 'title': '图片上传成功', ...}
+
+    @pytest.mark.parametrize("case",data)
+    def test_case(self,case):
+        #引用全局变量（建立测试函数内外all，可以使用{}空字典）
+        all = self.all
+        case = eval(Template(str(case)).render(all))
+    
+        allure_report_init(case)
+    
+        #0.测试用例的描述信息日志
+        logging.info(f'0.用例ID：{case["id"]} 模块：{case["feature"]} 标题：{case["title"]}')
+        # 核心步骤1：解析请求参数
+>       request_data = analyse_case(case)
+                       ^^^^^^^^^^^^^^^^^^
+
+../python-test-api/testcase/test_runner_40.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+case = {'id': 6, 'feature': '图片上传', 'story': '上传成功', 'title': '图片上传成功', ...}
+
+    @allure.step('1、解析请求数据')
+    def analyse_case(case):
+    
+        method = case['method']
+        url = current['BASE_URL'] + case['path']
+>       headers = eval(case['headers']) if isinstance(case['headers'], str) else None
+                  ^^^^^^^^^^^^^^^^^^^^^
+E         File "<string>", line 1
+E           {"Authorization"：""}
+E                           ^
+E       SyntaxError: invalid character '：' (U+FF1A)
+
+utils/analyse_case.py:18: SyntaxError
+conftest.py      158 pytest_sessionfinish 2026-07-21 18:59:56 [INFO] ============================================================
+conftest.py      161 pytest_sessionfinish 2026-07-21 18:59:56 [INFO] 【测试执行结束】
+conftest.py      164 pytest_sessionfinish 2026-07-21 18:59:56 [INFO] 结束时间: 2026-07-21 18:59:56
+conftest.py      167 pytest_sessionfinish 2026-07-21 18:59:56 [INFO] 总耗时: 12.825s
+conftest.py      170 pytest_sessionfinish 2026-07-21 18:59:56 [INFO] ------------------------------------------------------------
+conftest.py      173 pytest_sessionfinish 2026-07-21 18:59:56 [INFO] 【执行统计】
+conftest.py      176 pytest_sessionfinish 2026-07-21 18:59:56 [INFO]   用例总数: 6
+conftest.py      177 pytest_sessionfinish 2026-07-21 18:59:56 [INFO]   通过: 0
+conftest.py      178 pytest_sessionfinish 2026-07-21 18:59:56 [INFO]   失败: 6
+conftest.py      179 pytest_sessionfinish 2026-07-21 18:59:56 [INFO]   跳过: 0
+conftest.py      180 pytest_sessionfinish 2026-07-21 18:59:56 [INFO]   错误: 0
+conftest.py      181 pytest_sessionfinish 2026-07-21 18:59:56 [INFO]   通过率: 0.0%
+conftest.py      183 pytest_sessionfinish 2026-07-21 18:59:56 [INFO] ------------------------------------------------------------
+conftest.py      197 pytest_sessionfinish 2026-07-21 18:59:56 [INFO] 【失败用例汇总】
+conftest.py      199 pytest_sessionfinish 2026-07-21 18:59:56 [ERROR]   ✗ testcase/test_runner_40.py::TestRunner::test_case[case0]
+conftest.py      199 pytest_sessionfinish 2026-07-21 18:59:56 [ERROR]   ✗ testcase/test_runner_40.py::TestRunner::test_case[case1]
+conftest.py      199 pytest_sessionfinish 2026-07-21 18:59:56 [ERROR]   ✗ testcase/test_runner_40.py::TestRunner::test_case[case2]
+conftest.py      199 pytest_sessionfinish 2026-07-21 18:59:56 [ERROR]   ✗ testcase/test_runner_40.py::TestRunner::test_case[case3]
+conftest.py      199 pytest_sessionfinish 2026-07-21 18:59:56 [ERROR]   ✗ testcase/test_runner_40.py::TestRunner::test_case[case4]
+conftest.py      199 pytest_sessionfinish 2026-07-21 18:59:56 [ERROR]   ✗ testcase/test_runner_40.py::TestRunner::test_case[case5]
+conftest.py      201 pytest_sessionfinish 2026-07-21 18:59:56 [INFO] ============================================================
