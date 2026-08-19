@@ -197,7 +197,8 @@ python3 utils/send_allure_to_feishu.py \
 | headers / params / data / json / files | 请求参数（字符串写字典，运行时 `eval`） |
 | check | JsonPath，用于定位响应字段；为空则用 `expected in 响应文本` |
 | expected | HTTP 断言期望值 |
-| sql_check / sql_expectted | 数据库断言 SQL 与期望值 |
+| sql_check / sql_expectted | 数据库断言 SQL 与期望值（兼容旧方案） |
+| db_assert | **JSON 嵌入式数据库断言**（推荐，见下文） |
 | jsonExdata | JSON 提取，如 `{"TOKEN":"$..token"}` |
 | sqlExdata | SQL 提取字段 |
 | is_True | 是否执行该用例 |
@@ -207,6 +208,51 @@ python3 utils/send_allure_to_feishu.py \
 1. 登录用例通过 `jsonExdata` 提取 `TOKEN`
 2. 后续用例 headers 中写：`{"Authorization":"{{TOKEN}}"}`
 3. 执行前用 Jinja2 渲染全局变量 `all`
+
+### 数据库断言（JSON 嵌入 - 方案 C）
+
+`db_assert` 列支持把 SQL 与多条断言条件直接以 JSON 数组形式写在一个单元格内。  
+一个用例可以包含多组 SQL，每组 SQL 又可对返回行的多个字段分别断言不同条件。
+
+#### 单元格格式
+
+```json
+[
+  {
+    "sql": "SELECT age, name FROM user WHERE id=1",
+    "assert": [
+      {"field": "age",  "type": "eq",       "value": 25},
+      {"field": "name", "type": "contains", "value": "zhang"}
+    ]
+  },
+  {
+    "sql": "SELECT COUNT(*) AS cnt FROM user WHERE status=1",
+    "assert": [
+      {"field": "cnt", "type": "gt", "value": 0}
+    ]
+  }
+]
+```
+
+#### 支持的断言类型（type）
+
+| type | 含义 | 适用 |
+|------|------|------|
+| `eq` | 实际 == 期望 | 数值 / 字符串 |
+| `ne` | 实际 != 期望 | 数值 / 字符串 |
+| `gt` / `ge` / `lt` / `le` | 大于 / 大于等于 / 小于 / 小于等于 | 数值 |
+| `contains` | 字符串包含 | 字符串 |
+| `not_contains` | 字符串不包含 | 字符串 |
+| `is_null` | 实际为 NULL | 任意 |
+| `is_not_null` | 实际非 NULL | 任意 |
+
+#### 实现要点
+
+- 每条 SQL 仅取第一行，按 `field`（列名）取值，**不依赖列顺序**。
+- 数据自动进行字符串到数值的强制转换（避免 Excel 单元格被读成字符串导致比较失败）。
+- SQL 无返回数据时，`is_null` 视为通过，其他类型视为失败。
+- `assert` 列表中任一条件不通过即整条用例失败，并在 Allure 步骤中看到具体 `field` / `type` / 实际 / 期望。
+- 同时维护旧方案 `sql_check + sql_expected`，当 `db_assert` 为空时自动回退。
 
 ## 快速开始
 
